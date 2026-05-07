@@ -1,0 +1,133 @@
+groups:
+  - name: nexus-alerts
+    interval: 30s
+    rules:
+      # API Error Rate Alert
+      - alert: HighAPIErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High API error rate detected"
+          description: "API error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+
+      # High Latency Alert
+      - alert: HighAPILatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency detected"
+          description: "P95 latency is {{ $value | humanizeDuration }} over the last 5 minutes"
+
+      # Agent Run Failure Alert
+      - alert: AgentRunFailure
+        expr: rate(agent_runs_total{status="failed"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Agent run failures detected"
+          description: "Agent run failure rate is {{ $value }} per second"
+
+      # Database Connection Pool Exhaustion
+      - alert: DatabaseConnectionPoolExhausted
+        expr: db_pool_available_connections / db_pool_max_connections < 0.1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "Only {{ $value | humanizePercentage }} of database connections available"
+
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: (container_memory_usage_bytes{name="nexus-backend"} / container_spec_memory_limit_bytes{name="nexus-backend"}) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Backend memory usage is {{ $value | humanizePercentage }}"
+
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: avg(rate(container_cpu_usage_seconds_total{name="nexus-backend"}[5m])) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "Backend CPU usage is {{ $value | humanizePercentage }}"
+
+      # WebSocket Connection Spike
+      - alert: WebSocketConnectionSpike
+        expr: rate(websocket_connections_active[5m]) > 100
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "WebSocket connection spike detected"
+          description: "WebSocket connections increased by {{ $value }} per second"
+
+      # Document Processing Backlog
+      - alert: DocumentProcessingBacklog
+        expr: documents_total{status="pending"} > 50
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Document processing backlog detected"
+          description: "{{ $value }} documents pending processing"
+
+      # Virus Detection Alert
+      - alert: VirusDetected
+        expr: documents_total{virus_scan_status="infected"} > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Virus detected in uploaded document"
+          description: "{{ $value }} infected documents detected"
+
+      # Sandbox Execution Timeout
+      - alert: SandboxExecutionTimeout
+        expr: rate(sandbox_executions_timeout_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High sandbox execution timeout rate"
+          description: "Sandbox timeout rate is {{ $value }} per second"
+
+      # Knowledge Graph Extraction Failure
+      - alert: KnowledgeGraphExtractionFailure
+        expr: rate(knowledge_graph_extractions_failed_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Knowledge graph extraction failures"
+          description: "Extraction failure rate is {{ $value }} per second"
+
+      # LLM API Rate Limit
+      - alert: LLMAPIRateLimit
+        expr: rate(llm_api_rate_limit_exceeded_total[5m]) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "LLM API rate limit exceeded"
+          description: "Rate limit exceeded {{ $value }} times per second"
+
+      # Pod Restart Loop
+      - alert: PodRestartLoop
+        expr: increase(kube_pod_container_status_restarts_total{pod=~"nexus-backend.*"}[1h]) > 3
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Pod restart loop detected"
+          description: "Pod {{ $labels.pod }} has restarted {{ $value }} times in the last hour"
