@@ -1,0 +1,84 @@
+# Nexus Research OS - Git Ignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# Testing
+coverage/
+.test-results/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Secrets
+*.pem
+*.key
+secrets/
+
+# Build artifacts
+*.egg
+.wheelhouse/
+
+# Frontend build
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Backend build
+backend/dist/
+backend/build/
+
+# Documentation builds
+docs/_build/
