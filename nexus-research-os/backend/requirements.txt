@@ -39,6 +39,9 @@ aio-pika==9.4.3
 # WebSockets
 websockets==14.1
 
+# Docker SDK for Sandbox
+docker==7.1.0
+
 # Logging and Monitoring
 structlog==24.4.0
 prometheus-client==0.21.1

@@ -1,125 +1,276 @@
-# Nexus Research OS - Professional SaaS Platform
+# Nexus Research OS - Comprehensive README
 
 ## Overview
-Nexus Research OS is an autonomous AI platform for scientific research and development. It provides multi-agent orchestration, knowledge graph reasoning, secure code execution, and experimental design capabilities for researchers across all domains.
+Nexus Research OS is an advanced, autonomous AI platform designed for scientific research and development. It provides researchers across all major fields with powerful AI tools for literature analysis, experimental design, data analysis, and knowledge discovery.
+
+## Key Features
+
+### 🧠 Multi-Agent AI System
+- **Chief Scientist Agent**: Orchestrates complex research workflows
+- **Specialized Agents**: Literature review, data analysis, hypothesis generation, experimental design
+- **Autonomous Execution**: Agents can plan and execute multi-step research tasks
+- **Real-time Monitoring**: WebSocket-based live agent activity streaming
+
+### 📚 Knowledge Management
+- **Document Processing**: PDF parsing, chunking, and intelligent indexing
+- **Vector Search**: Semantic search across research documents using Qdrant
+- **Knowledge Graph**: Neo4j-powered entity extraction and relationship mapping
+- **Graph RAG**: Combine vector and graph search for enhanced retrieval
+
+### 💻 Secure Code Sandbox
+- **Isolated Execution**: Docker-based containerized code execution
+- **Multi-language Support**: Python with extensible language support
+- **Resource Limits**: Memory, CPU, and timeout constraints for safety
+- **Package Management**: Dynamic package installation in sandboxed environment
+
+### 🔒 Enterprise Security
+- **Multi-tenancy**: Organization and project-level isolation
+- **RBAC**: Role-based access control
+- **Audit Logging**: Comprehensive activity tracking
+- **Sandboxed Execution**: No network access, read-only filesystem
 
 ## Architecture
 
-### Core Components
-1. **Frontend**: Next.js 14 with TypeScript, Tailwind CSS, and real-time collaboration
-2. **Backend**: FastAPI with async processing, WebSocket support, and event-driven architecture
-3. **Agent System**: LangGraph-based multi-agent orchestration with specialized research agents
-4. **Knowledge Engine**: Hybrid vector + graph database with Graph-RAG capabilities
-5. **Sandbox**: Firecracker MicroVMs for secure code execution and simulation
-6. **Data Layer**: PostgreSQL for relational data, Qdrant for vectors, Neo4j for knowledge graphs
-
-### Key Features
-- Autonomous research agent swarms
-- Literature review and hypothesis generation
-- Experimental design and protocol optimization
-- Code execution with Jupyter kernel integration
-- Real-time collaboration and version control
-- Enterprise-grade security and compliance
-- Multi-tenant SaaS architecture
-
-## Project Structure
-
 ```
-nexus-research-os/
-├── backend/                 # Python FastAPI backend
-│   ├── app/
-│   │   ├── api/            # REST and WebSocket endpoints
-│   │   ├── core/           # Configuration, security, logging
-│   │   ├── agents/         # Multi-agent system implementation
-│   │   ├── knowledge/      # Vector DB, graph DB, RAG pipelines
-│   │   ├── sandbox/        # Secure code execution environment
-│   │   ├── models/         # Pydantic models and DB schemas
-│   │   └── services/       # Business logic and external integrations
-│   └── tests/              # Comprehensive test suite
-├── frontend/               # Next.js 14 frontend
-│   └── src/
-│       ├── app/            # App router pages
-│       ├── components/     # Reusable UI components
-│       ├── hooks/          # Custom React hooks
-│       ├── lib/            # Utilities and API clients
-│       ├── stores/         # State management (Zustand)
-│       └── types/          # TypeScript definitions
-├── infrastructure/         # DevOps and deployment
-│   ├── k8s/                # Kubernetes manifests
-│   ├── docker/             # Dockerfiles and compose
-│   └── terraform/          # Infrastructure as Code
-├── docs/                   # Documentation
-└── scripts/                # Development and deployment scripts
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend (Next.js 14)                    │
+│  Dashboard | Projects | Knowledge Explorer | Code Sandbox   │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 API Gateway (FastAPI + WebSockets)          │
+│         /api/v1/agents | /api/v1/knowledge | /sandbox       │
+└─────────────────────────────────────────────────────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        ▼                   ▼                   ▼
+┌───────────────┐  ┌───────────────┐  ┌───────────────┐
+│ Agent Service │  │  Knowledge    │  │   Sandbox     │
+│  (LangGraph)  │  │   Pipeline    │  │   Service     │
+└───────────────┘  └───────────────┘  └───────────────┘
+        │                   │                   │
+        ▼                   ▼                   ▼
+┌───────────────┐  ┌───────────────┐  ┌───────────────┐
+│   PostgreSQL  │  │    Qdrant     │  │    Docker     │
+│   (Metadata)  │  │  (Vectors)    │  │  (Sandbox)    │
+└───────────────┘  └───────────────┘  └───────────────┘
+                          │
+                          ▼
+                   ┌───────────────┐
+                   │     Neo4j     │
+                   │  (Knowledge   │
+                   │     Graph)    │
+                   └───────────────┘
 ```
 
-## Technology Stack
+## Tech Stack
 
 ### Backend
-- **Framework**: FastAPI with UVicorn
-- **Database**: PostgreSQL 16 with asyncpg
-- **Vector DB**: Qdrant with hybrid search
-- **Graph DB**: Neo4j for knowledge graphs
-- **Cache**: Redis for session and result caching
-- **Message Queue**: RabbitMQ/Celery for async tasks
-- **Authentication**: JWT with OAuth2 provider integration
-- **LLM Router**: LiteLLM for multi-provider support
+- **Framework**: FastAPI (Python 3.11+)
+- **Agent Framework**: LangGraph
+- **LLM Router**: LiteLLM
+- **Database**: PostgreSQL 15 (asyncpg)
+- **Vector DB**: Qdrant
+- **Graph DB**: Neo4j 5
+- **Cache**: Redis 7
+- **Task Queue**: Celery + RabbitMQ
 
 ### Frontend
-- **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **State**: Zustand for client state, TanStack Query for server state
-- **Real-time**: Socket.io-client for WebSocket communication
-- **Visualization**: D3.js, React Flow for agent workflows
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State**: React Query + Zustand
+- **Visualization**: react-force-graph
 
 ### Infrastructure
-- **Containerization**: Docker with multi-stage builds
-- **Orchestration**: Kubernetes with Helm charts
-- **CI/CD**: GitHub Actions with automated testing
-- **Monitoring**: Prometheus, Grafana, Jaeger for tracing
-- **Security**: Vault for secrets, OPA for policies
+- **Containerization**: Docker & Docker Compose
+- **Orchestration**: Kubernetes
+- **CI/CD**: GitHub Actions
+- **Monitoring**: Prometheus + OpenTelemetry
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
-- Docker Desktop or Podman
-- Node.js 20+ and npm/yarn
-- Python 3.11+ with uv or poetry
-- Kubernetes cluster (local: kind/minikube, cloud: EKS/GKE)
+- Docker & Docker Compose
+- Python 3.11+
+- Node.js 18+
+- API keys for LLM providers (OpenAI, Anthropic, etc.)
 
-### Quick Start
+### 1. Clone Repository
 ```bash
-# Clone the repository
-git clone <repository-url>
+git clone https://github.com/your-org/nexus-research-os.git
 cd nexus-research-os
+```
 
-# Start infrastructure services
-docker-compose up -d postgres qdrant neo4j redis rabbitmq
+### 2. Configure Environment
+```bash
+cp backend/.env.example backend/.env
+# Edit .env with your API keys and settings
+```
 
-# Initialize backend
+### 3. Start Services (Development)
+```bash
+docker-compose up -d
+```
+
+Services available:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
+- Neo4j Browser: http://localhost:7474
+- Qdrant Dashboard: http://localhost:6333/dashboard
+
+### 4. Run Tests
+```bash
+# Backend tests
+cd backend
+pytest tests/ -v
+
+# Frontend tests
+cd frontend
+npm test
+```
+
+## API Endpoints
+
+### Agents
+- `POST /api/v1/agents/run` - Start new agent run
+- `GET /api/v1/agents/{run_id}` - Get agent run status
+- `GET /api/v1/agents/` - List agent runs
+- `DELETE /api/v1/agents/{run_id}` - Cancel agent run
+- `WS /api/v1/agents/ws/{run_id}` - WebSocket for real-time monitoring
+
+### Knowledge Graph
+- `POST /api/v1/knowledge/process-document` - Process document to graph
+- `POST /api/v1/knowledge/search` - Search knowledge graph
+- `GET /api/v1/knowledge/stats` - Get graph statistics
+- `GET /api/v1/knowledge/entities/{entity_id}` - Get entity details
+
+### Code Sandbox
+- `POST /api/v1/sandbox/execute` - Execute code in sandbox
+- `GET /api/v1/sandbox/containers` - List active containers
+- `POST /api/v1/sandbox/containers/{id}/stop` - Stop container
+
+## Deployment
+
+### Kubernetes Deployment
+```bash
+# Create namespace and secrets
+kubectl apply -f infra/k8s/secrets.yaml
+kubectl apply -f infra/k8s/deployment.yaml
+
+# Verify deployment
+kubectl get pods -n nexus-research-os
+```
+
+### Helm Chart (Coming Soon)
+```bash
+helm install nexus ./infra/helm/nexus-research-os
+```
+
+## Configuration
+
+### Environment Variables
+
+#### Core Settings
+- `DATABASE_URL`: PostgreSQL connection string
+- `QDRANT_URL`: Qdrant vector database URL
+- `NEO4J_URI`: Neo4j Bolt URI
+- `REDIS_URL`: Redis connection string
+
+#### LLM Configuration
+- `DEFAULT_LLM_PROVIDER`: openai, anthropic, azure, etc.
+- `OPENAI_API_KEY`: OpenAI API key
+- `ANTHROPIC_API_KEY`: Anthropic API key
+
+#### Security
+- `SECRET_KEY`: JWT signing key (min 32 chars)
+- `ACCESS_TOKEN_EXPIRE_MINUTES`: Token expiration time
+
+## Development
+
+### Backend Development
+```bash
 cd backend
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-alembic upgrade head
-
-# Initialize frontend
-cd ../frontend
-npm install
-npm run dev
-
-# Access the application
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:8000
-# API Docs: http://localhost:8000/docs
+uvicorn app.main:app --reload
 ```
 
+### Frontend Development
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Testing Strategy
+
+### Unit Tests
+- Service layer tests
+- Utility function tests
+- Model validation tests
+
+### Integration Tests
+- API endpoint tests
+- Database integration tests
+- External service mocks
+
+### E2E Tests
+- User workflow tests
+- Agent execution tests
+- Full pipeline tests
+
 ## Security Considerations
-- All code execution happens in isolated Firecracker MicroVMs
-- Role-based access control (RBAC) with fine-grained permissions
-- End-to-end encryption for data in transit and at rest
-- Regular security audits and penetration testing
-- Compliance with GDPR, HIPAA, and SOC2 requirements
+
+1. **Code Sandbox**: All user code executes in isolated Docker containers with no network access
+2. **API Authentication**: JWT-based authentication with refresh tokens
+3. **Data Encryption**: TLS for data in transit, encryption at rest for sensitive data
+4. **Rate Limiting**: Configurable rate limits per user/organization
+5. **Audit Logging**: All actions logged for compliance and debugging
+
+## Roadmap
+
+### Phase 1 (Completed) ✓
+- Core infrastructure
+- Basic agent framework
+- Document processing
+- Knowledge graph foundation
+
+### Phase 2 (In Progress)
+- Advanced agent workflows
+- Real-time collaboration
+- Enhanced UI/UX
+- Performance optimization
+
+### Phase 3 (Planned)
+- Domain-specific agents (biology, chemistry, physics)
+- Lab equipment integration
+- Advanced analytics dashboard
+- Mobile applications
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
-Proprietary - All rights reserved
+
+Proprietary - All rights reserved.
+
+## Support
+
+For support and questions:
+- Documentation: https://docs.nexusresearch.os
+- Email: support@nexusresearch.os
+- Discord: https://discord.gg/nexus-research
+
+## Acknowledgments
+
+Built with amazing open-source tools:
+- FastAPI
+- LangChain/LangGraph
+- Next.js
+- Qdrant
+- Neo4j
