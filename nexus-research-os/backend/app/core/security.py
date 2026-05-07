@@ -1,4 +1,5 @@
-from fastapi import Depends, HTTPException, status
+import json
+from fastapi import Depends, HTTPException, status, WebSocket
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
@@ -128,3 +129,21 @@ async def require_organization_access(
             detail="Access denied to this organization"
         )
     return current_user
+
+
+async def get_current_user_ws(websocket: WebSocket) -> TokenData:
+    """
+    Get current user from WebSocket connection.
+    Expects token in query parameter or subprotocol.
+    """
+    token = websocket.query_params.get("token")
+    
+    if not token:
+        await websocket.close(code=4401, reason="Missing authentication token")
+        raise HTTPException(status_code=4401, detail="Missing authentication token")
+    
+    try:
+        return decode_token(token)
+    except HTTPException as e:
+        await websocket.close(code=4401, reason=e.detail)
+        raise
