@@ -16,7 +16,15 @@ langgraph==0.2.58
 langchain==0.3.12
 langchain-core==0.3.28
 langchain-openai==0.2.14
+langchain-community==0.3.12
 litellm==1.55.0
+
+# Document Processing
+pypdf==5.1.0
+pdfplumber==0.11.5
+unstructured==0.16.11
+nltk==3.9.1
+spacy==3.8.3
 
 # Security and Authentication
 python-jose[cryptography]==3.3.0
@@ -26,7 +34,10 @@ python-multipart==0.0.20
 # Async Task Queue
 celery==5.4.0
 redis==5.2.1
-rabbitmq-server==3.13.0
+aio-pika==9.4.3
+
+# WebSockets
+websockets==14.1
 
 # Logging and Monitoring
 structlog==24.4.0
@@ -40,9 +51,11 @@ pytest==8.3.4
 pytest-asyncio==0.24.0
 pytest-cov==6.0.0
 httpx==0.28.1
+pytest-mock==3.14.0
 
 # Utilities
 python-dotenv==1.0.1
 aiofiles==24.1.0
 tenacity==9.0.0
 cachetools==5.5.0
+aiohttp==3.11.11
