@@ -1,30 +1,9 @@
 ```
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.git/modules/
-.DS_Store
-.hypothesis/
-.pytest_cache/
-.mypy_cache/
-
-# Distribution / packaging
+*.py[cod]
+*$py.class
+*.so
 .Python
 build/
 develop-eggs/
@@ -41,16 +20,59 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Logs
+*.log
 
 # Environment variables
 .env
-.venv
-env/
+.env.local
+*.env.*
 
-# IDEs
-.vscode/
-.idea/
+# Coverage
+.coverage
+htmlcov/
+.coverage.*
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Testing
+.pytest_cache/
+.hypothesis/
+.coverage*
 
 # OS generated files
 .DS_Store

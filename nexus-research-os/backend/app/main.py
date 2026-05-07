@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
@@ -8,7 +8,10 @@ from app.core.config import get_settings
 from app.core.logging_config import setup_logging, get_logger
 from app.core.database import init_db, close_db
 from app.api import auth, projects
+from app.api.routes import agents, knowledge, sandbox
+from app.api.websocket.manager import manager
 from app.services.llm import get_llm_service
+from app.services.knowledge_graph.graph_service import get_knowledge_graph_service
 
 settings = get_settings()
 logger = get_logger(__name__)
@@ -26,6 +29,18 @@ async def lifespan(app: FastAPI):
     
     # Initialize services
     llm_service = get_llm_service()
+    
+    # Initialize Neo4j connection if available
+    try:
+        kg_service = get_knowledge_graph_service(
+            uri=settings.NEO4J_URI,
+            user=settings.NEO4J_USER,
+            password=settings.NEO4J_PASSWORD
+        )
+        logger.info("Knowledge Graph service initialized")
+    except Exception as e:
+        logger.warning(f"Knowledge Graph service not available: {e}")
+    
     logger.info("Services initialized")
     
     yield
@@ -94,6 +109,35 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Include routers
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
+app.include_router(agents.router, prefix="/api/v1")
+app.include_router(knowledge.router, prefix="/api/v1")
+app.include_router(sandbox.router, prefix="/api/v1")
+
+# WebSocket endpoint for agent monitoring
+@app.websocket("/ws/agents/{run_id}")
+async def websocket_agent_monitor(
+    websocket: WebSocket,
+    run_id: str
+):
+    """WebSocket endpoint for real-time agent monitoring"""
+    # Note: Authentication would be handled in the actual implementation
+    await manager.connect(websocket, f"user-{run_id}")
+    manager.subscribe_to_agent(run_id, f"user-{run_id}")
+    
+    try:
+        await websocket.send_json({
+            "type": "connected",
+            "run_id": run_id,
+            "message": "Connected to agent stream"
+        })
+        
+        while True:
+            data = await websocket.receive_text()
+            # Handle client messages if needed
+            
+    except Exception:
+        manager.disconnect(websocket, f"user-{run_id}")
+        manager.unsubscribe_from_agent(run_id, f"user-{run_id}")
 
 
 # Health check endpoint
