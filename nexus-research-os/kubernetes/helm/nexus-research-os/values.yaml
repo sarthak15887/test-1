@@ -1,0 +1,260 @@
+# Default values for Nexus Research OS
+# This is a YAML-formatted file.
+
+replicaCount: 3
+
+image:
+  backend:
+    repository: nexus-research-os/backend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  frontend:
+    repository: nexus-research-os/frontend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Backend Configuration
+backend:
+  service:
+    type: ClusterIP
+    port: 8000
+  
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  
+  env:
+    LOG_LEVEL: "INFO"
+    ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+    REFRESH_TOKEN_EXPIRE_DAYS: "7"
+  
+  secrets:
+    SECRET_KEY: ""  # Should be set via external secret manager
+    DATABASE_URL: ""
+    OPENAI_API_KEY: ""
+    ANTHROPIC_API_KEY: ""
+  
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: 8000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# Frontend Configuration
+frontend:
+  service:
+    type: ClusterIP
+    port: 3000
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 15
+    targetCPUUtilizationPercentage: 80
+  
+  env:
+    NEXT_PUBLIC_API_URL: "http://nexus-backend:8000"
+    NEXT_PUBLIC_WS_URL: "ws://nexus-backend:8000"
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+  
+  hosts:
+    - host: nexus-research.example.com
+      paths:
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: nexus-backend
+              port: 8000
+        - path: /ws
+          pathType: Prefix
+          backend:
+            service:
+              name: nexus-backend
+              port: 8000
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: nexus-frontend
+              port: 3000
+  
+  tls:
+    - secretName: nexus-tls-secret
+      hosts:
+        - nexus-research.example.com
+
+# PostgreSQL Configuration
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "changeme"
+    username: nexus
+    password: "changeme"
+    database: nexus
+  primary:
+    persistence:
+      enabled: true
+      size: 50Gi
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+# Redis Configuration
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "changeme"
+  master:
+    persistence:
+      enabled: true
+      size: 10Gi
+  replica:
+    replicaCount: 2
+
+# Qdrant Vector Database Configuration
+qdrant:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 100Gi
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 8Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+
+# Neo4j Graph Database Configuration
+neo4j:
+  enabled: true
+  neo4j:
+    password: "changeme"
+  volumes:
+    data:
+      mode: dynamic
+      size: 50Gi
+    logs:
+      mode: dynamic
+      size: 20Gi
+    import:
+      mode: dynamic
+      size: 10Gi
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 8Gi
+    requests:
+      cpu: 1000m
+      memory: 4Gi
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+  
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+
+# Network Policies
+networkPolicies:
+  enabled: true
+  defaultDeny: true
+  allowIngressFrom:
+    - namespace: ingress-nginx
+  allowEgressTo:
+    - namespace: monitoring
+
+# Resource Quotas
+resourceQuota:
+  enabled: true
+  hard:
+    requests.cpu: "20"
+    requests.memory: 40Gi
+    limits.cpu: "40"
+    limits.memory: 80Gi
+    pods: "50"
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  backend:
+    enabled: true
+    minAvailable: 2
+  frontend:
+    enabled: true
+    minAvailable: 2

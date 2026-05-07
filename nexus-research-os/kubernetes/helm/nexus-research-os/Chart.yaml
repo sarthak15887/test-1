@@ -1,0 +1,37 @@
+apiVersion: v2
+name: nexus-research-os
+description: A Helm chart for Nexus Research OS - Autonomous AI Platform for Scientific Research
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - ai
+  - research
+  - science
+  - autonomous-agents
+  - llm
+home: https://github.com/nexus-research-os
+sources:
+  - https://github.com/nexus-research-os/nexus-research-os
+
+maintainers:
+  - name: Nexus Research Team
+    email: team@nexus-research.os
+
+dependencies:
+  - name: postgresql
+    version: 12.5.0
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: redis
+    version: 17.0.0
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+  - name: qdrant
+    version: 0.1.0
+    repository: https://qdrant.github.io/qdrant-helm
+    condition: qdrant.enabled
+  - name: neo4j
+    version: 5.0.0
+    repository: https://neo4j.github.io/neo4j-helm
+    condition: neo4j.enabled
